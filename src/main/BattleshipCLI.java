@@ -1,12 +1,13 @@
 package src.main;
 
 import java.util.Scanner;
+import java.io.IOException;
 
 public class BattleshipCLI {
     private final BattleshipModel model;
     private final Scanner scanner;
 
-    // For convenience in parsing A-J
+    // To parse A-J
     private final String ROW_LABELS = "ABCDEFGHIJ";
 
     public BattleshipCLI(BattleshipModel model) {
@@ -16,6 +17,7 @@ public class BattleshipCLI {
 
     public void startGame() {
         System.out.println("Welcome to Battleships (CLI Version)!");
+        chooseBoardSetup();
         while (!model.isGameOver()) {
             printBoard();
             System.out.print("Enter guess (e.g. A1, J10): ");
@@ -30,6 +32,26 @@ public class BattleshipCLI {
         }
         System.out.println("Game over! You sank all ships in "
                 + model.getTries() + " tries.");
+    }
+
+    /**
+     * Prompt user to choose how to initialize board.
+     */
+    private void chooseBoardSetup() {
+        System.out.print("Press [H] for Hard-Coded board or [F] for file loading: ");
+        String choice = scanner.nextLine().trim().toUpperCase();
+        if (choice.startsWith("F")) {
+            System.out.print("Enter path to file: ");
+            String path = scanner.nextLine().trim();
+            try {
+                model.loadFromFile(path);
+            } catch (IOException e) {
+                System.out.println("Failed to load from file. Using hard-coded placement instead.");
+                model.initializeHardCodedBoard();
+            }
+        } else {
+            model.initializeHardCodedBoard();
+        }
     }
 
     private void printBoard() {
@@ -51,27 +73,22 @@ public class BattleshipCLI {
     }
 
     private int[] parseInput(String input) {
-        // i.e. A1 would be row=0, col=0
         if (input.length() < 2) return null;
-
-        // get letter (row)
         char rowChar = input.charAt(0);
         int row = ROW_LABELS.indexOf(rowChar);
         if (row < 0) return null;
-
-        // get number (col)
-        String colStr = input.substring(1); // everything after the first character
+        String colStr = input.substring(1);
         int col;
         try {
-            col = Integer.parseInt(colStr) - 1; // 0-based
+            col = Integer.parseInt(colStr) - 1;
         } catch (NumberFormatException e) {
             return null;
         }
-
         if (col < 0 || col >= 10) {
             return null;
         }
         return new int[]{row, col};
     }
 }
+
 
