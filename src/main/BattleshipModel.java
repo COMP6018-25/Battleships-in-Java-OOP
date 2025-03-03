@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Random;
 
 public class BattleshipModel extends Observable {
     private static final int BOARD_SIZE = 10;
@@ -28,24 +29,35 @@ public class BattleshipModel extends Observable {
         }
     }
 
-    public void initializeHardCodedBoard() {
-        assert ships.isEmpty() : "Ships list should be empty at initialization";
+    public void resetGame() {
+        initializeEmptyBoard();
+        ships.clear();
+        tries = 0;
+        setChanged();
+        notifyObservers();
+    }
 
-        // Length 5: horizontal from (0,0) to (0,4)
-        placeShip(new Ship(0, 0, 5, true));
-
-        // Length 4: vertical from (2,2) to (5,2)
-        placeShip(new Ship(2, 2, 4, false));
-
-        // Length 3: horizontal from (4,5) to (4,7)
-        placeShip(new Ship(4, 5, 3, true));
-
-        // Length 2: horizontal from (6,1) to (6,2)
-        placeShip(new Ship(6, 1, 2, true));
-
-        // Length 2: horizontal from (9,8) to (9,9)
-        placeShip(new Ship(9, 8, 2, true));
-
+    public void initializeRandomBoard() {
+        resetGame(); // Clear any existing board/ships.
+        int[] shipLengths = {5, 4, 3, 2, 2};
+        Random rand = new Random();
+        for (int length : shipLengths) {
+            boolean placed = false;
+            while (!placed) {
+                boolean horizontal = rand.nextBoolean();
+                int maxRow = horizontal ? BOARD_SIZE : BOARD_SIZE - length;
+                int maxCol = horizontal ? BOARD_SIZE - length : BOARD_SIZE;
+                int row = rand.nextInt(maxRow);
+                int col = rand.nextInt(maxCol);
+                Ship ship = new Ship(row, col, length, horizontal);
+                try {
+                    placeShip(ship);
+                    placed = true;
+                } catch (IllegalArgumentException e) {
+                    // Overlap occurred; try another random placement.
+                }
+            }
+        }
         setChanged();
         notifyObservers();
     }
@@ -53,9 +65,6 @@ public class BattleshipModel extends Observable {
     public void placeShip(Ship ship) {
         int row = ship.getStartRow();
         int col = ship.getStartCol();
-
-        assert row >= 0 && row < BOARD_SIZE : "Row index out of bounds";
-        assert col >= 0 && col < BOARD_SIZE : "Column index out of bounds";
 
         if (ship.isHorizontal()) {
             if (col + ship.getLength() > BOARD_SIZE) {
@@ -67,7 +76,6 @@ public class BattleshipModel extends Observable {
             }
         }
 
-        // Check for overlapping
         int r = row;
         int c = col;
         for (int i = 0; i < ship.getLength(); i++) {
@@ -119,9 +127,6 @@ public class BattleshipModel extends Observable {
     }
 
     public boolean guess(int row, int col) {
-        assert row >= 0 && row < BOARD_SIZE : "Row index out of bounds in guess()";
-        assert col >= 0 && col < BOARD_SIZE : "Column index out of bounds in guess()";
-
         tries++;
 
         if (board[row][col] == CellState.HIT || board[row][col] == CellState.MISS) {
@@ -160,9 +165,17 @@ public class BattleshipModel extends Observable {
     }
 
     public CellState getCellState(int row, int col) {
-        assert row >= 0 && row < BOARD_SIZE : "Row index out of bounds in getCellState()";
-        assert col >= 0 && col < BOARD_SIZE : "Column index out of bounds in getCellState()";
         return board[row][col];
+    }
+
+    public int getShipsRemaining() {
+        int count = 0;
+        for (Ship s : ships) {
+            if (!s.isSunk()) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private boolean isPartOfShip(Ship ship, int row, int col) {
@@ -181,4 +194,3 @@ public class BattleshipModel extends Observable {
         return false;
     }
 }
-

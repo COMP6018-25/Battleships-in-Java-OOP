@@ -18,13 +18,13 @@ public class BattleshipMain {
             cli.startGame();
         } else if ("gui".equals(choice)) {
             // GUI
-            model.initializeHardCodedBoard();
+            model.initializeRandomBoard();
             BattleshipView view = new BattleshipView();
             BattleshipController controller = new BattleshipController(model, view);
             view.addController(controller);
         } else {
             System.out.println("Invalid input. Defaulting to GUI...");
-            model.initializeHardCodedBoard();
+            model.initializeRandomBoard();
             BattleshipView view = new BattleshipView();
             BattleshipController controller = new BattleshipController(model, view);
             view.addController(controller);

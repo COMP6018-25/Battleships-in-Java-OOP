@@ -6,8 +6,6 @@ import java.io.IOException;
 public class BattleshipCLI {
     private final BattleshipModel model;
     private final Scanner scanner;
-
-    // To parse A-J
     private final String ROW_LABELS = "ABCDEFGHIJ";
 
     public BattleshipCLI(BattleshipModel model) {
@@ -29,16 +27,13 @@ public class BattleshipCLI {
             }
             boolean hit = model.guess(rc[0], rc[1]);
             System.out.println(hit ? "Hit!" : "Miss!");
+            System.out.println("Ships remaining: " + model.getShipsRemaining());
         }
-        System.out.println("Game over! You sank all ships in "
-                + model.getTries() + " tries.");
+        System.out.println("Game over! You sank all ships in " + model.getTries() + " tries.");
     }
 
-    /**
-     * Prompt user to choose how to initialize board.
-     */
     private void chooseBoardSetup() {
-        System.out.print("Press [H] for Hard-Coded board or [F] for file loading: ");
+        System.out.print("Press [H] for Random board or [F] for file loading: ");
         String choice = scanner.nextLine().trim().toUpperCase();
         if (choice.startsWith("F")) {
             System.out.print("Enter path to file: ");
@@ -46,11 +41,11 @@ public class BattleshipCLI {
             try {
                 model.loadFromFile(path);
             } catch (IOException e) {
-                System.out.println("Failed to load from file. Using hard-coded placement instead.");
-                model.initializeHardCodedBoard();
+                System.out.println("Failed to load from file. Using random board instead.");
+                model.initializeRandomBoard();
             }
         } else {
-            model.initializeHardCodedBoard();
+            model.initializeRandomBoard();
         }
     }
 
@@ -62,9 +57,15 @@ public class BattleshipCLI {
                 CellState state = model.getCellState(r, c);
                 char symbol;
                 switch (state) {
-                    case HIT:  symbol = 'H'; break;
-                    case MISS: symbol = 'M'; break;
-                    default:   symbol = '.'; break;
+                    case HIT:
+                        symbol = 'H';
+                        break;
+                    case MISS:
+                        symbol = 'M';
+                        break;
+                    default:
+                        symbol = '.';
+                        break;
                 }
                 System.out.printf(" %c ", symbol);
             }
@@ -74,6 +75,7 @@ public class BattleshipCLI {
 
     private int[] parseInput(String input) {
         if (input.length() < 2) return null;
+        if (input.contains(" ")) return null;
         char rowChar = input.charAt(0);
         int row = ROW_LABELS.indexOf(rowChar);
         if (row < 0) return null;
@@ -90,5 +92,3 @@ public class BattleshipCLI {
         return new int[]{row, col};
     }
 }
-
-
