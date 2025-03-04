@@ -16,6 +16,17 @@ public class BattleshipController implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
+
+        // Handle reset game action
+        if ("RESET_GAME".equals(command)) {
+            // Reset, new random board
+            model.resetGame();
+            model.initializeRandomBoard();
+            view.updateBoard(model);
+            return;
+        }
+
+        // Otherwise, assume it's a board cell click
         String[] parts = command.split(",");
         int row = Integer.parseInt(parts[0]);
         int col = Integer.parseInt(parts[1]);
@@ -25,14 +36,10 @@ public class BattleshipController implements ActionListener {
         // Update cell in view
         view.updateCell(row, col, model.getCellState(row, col));
 
-        // Message to show hit or miss
-        // JOptionPane.showMessageDialog(view, hit ? "Hit!" : "Miss!");
-
-        // Check game state
+        // Check game state and show message if all ships are sunk
         if (model.isGameOver()) {
             JOptionPane.showMessageDialog(view,
                     "All ships sunk! You used " + model.getTries() + " tries.");
         }
     }
 }
-
