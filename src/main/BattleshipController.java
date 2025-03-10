@@ -19,10 +19,10 @@ public class BattleshipController implements ActionListener {
 
         // Handle reset game action
         if ("RESET_GAME".equals(command)) {
-            // Reset, new random board
             model.resetGame();
             model.initializeRandomBoard();
             view.updateBoard(model);
+            view.updateScoreboard(model);
             return;
         }
 
@@ -35,6 +35,9 @@ public class BattleshipController implements ActionListener {
 
         // Update cell in view
         view.updateCell(row, col, model.getCellState(row, col));
+
+        // Update scoreboard with current guess count
+        view.updateScoreboard(model);
 
         // Check game state and show message if all ships are sunk
         if (model.isGameOver()) {

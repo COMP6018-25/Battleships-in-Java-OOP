@@ -10,15 +10,23 @@ import java.awt.*;
 public class BattleshipView extends JFrame {
     public static final int BOARD_SIZE = 10;
     private final JButton[][] buttons;
-    private final JButton resetButton; // New reset button
+    private final JButton resetButton; // Reset button
     private final JPanel boardPanel;
     private final JPanel controlPanel;
+    private final JLabel scoreboardLabel;
 
     public BattleshipView() {
         setTitle("Battleships (GUI)");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // Top panel for scoreboard
+        JPanel scoreboardPanel = new JPanel();
+        scoreboardLabel = new JLabel("Guesses: 0");
+        scoreboardPanel.add(scoreboardLabel);
+        add(scoreboardPanel, BorderLayout.NORTH);
+
+        // Board panel in the center
         boardPanel = new JPanel(new GridLayout(BOARD_SIZE, BOARD_SIZE));
         buttons = new JButton[BOARD_SIZE][BOARD_SIZE];
         for (int r = 0; r < BOARD_SIZE; r++) {
@@ -29,14 +37,13 @@ public class BattleshipView extends JFrame {
                 boardPanel.add(btn);
             }
         }
+        add(boardPanel, BorderLayout.CENTER);
 
-        // reset button
+        // Control panel at the bottom with reset button
         controlPanel = new JPanel();
         resetButton = new JButton("Reset Game");
         resetButton.setActionCommand("RESET_GAME");
         controlPanel.add(resetButton);
-
-        add(boardPanel, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.SOUTH);
 
         pack();
@@ -77,5 +84,10 @@ public class BattleshipView extends JFrame {
                 updateCell(r, c, model.getCellState(r, c));
             }
         }
+    }
+
+    // update the scoreboard with the current number of guesses
+    public void updateScoreboard(BattleshipModel model) {
+        scoreboardLabel.setText("Guesses: " + model.getTries());
     }
 }
