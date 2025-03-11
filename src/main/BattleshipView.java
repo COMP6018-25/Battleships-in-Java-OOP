@@ -33,6 +33,8 @@ public class BattleshipView extends JFrame {
             for (int c = 0; c < BOARD_SIZE; c++) {
                 JButton btn = new JButton();
                 btn.setActionCommand(r + "," + c);
+                // Set each button to be a fixed square (50x50 pixels, roughly 1cm depending on DPI)
+                btn.setPreferredSize(new Dimension(50, 50));
                 buttons[r][c] = btn;
                 boardPanel.add(btn);
             }
