@@ -14,6 +14,15 @@ public class BattleshipModel extends Observable {
     private final List<Ship> ships;
     private int tries;
 
+    private String lastSunkMessage = "";
+
+    public String getLastSunkMessage() {
+        String msg = lastSunkMessage;
+        lastSunkMessage = "";
+        return msg;
+    }
+
+
     public BattleshipModel() {
         board = new CellState[BOARD_SIZE][BOARD_SIZE];
         ships = new ArrayList<>();
@@ -137,9 +146,13 @@ public class BattleshipModel extends Observable {
         if (board[row][col] == CellState.SHIP) {
             board[row][col] = CellState.HIT;
             hit = true;
+            // Checks if a ship was sunk
             for (Ship s : ships) {
                 if (isPartOfShip(s, row, col)) {
                     s.registerHit();
+                    if (s.justSunk()) {
+                        lastSunkMessage = "Ship sunk! (Length: " + s.getLength() + ")";
+                    }
                     break;
                 }
             }
@@ -150,6 +163,7 @@ public class BattleshipModel extends Observable {
         notifyObservers();
         return hit;
     }
+
 
     public boolean isGameOver() {
         for (Ship s : ships) {

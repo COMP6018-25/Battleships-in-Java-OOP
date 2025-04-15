@@ -6,6 +6,7 @@ public class Ship {
     private final int length;
     private final boolean horizontal;
     private int hits;
+    private boolean sunkAnnounced;  // NEW field to track if "just sunk" has been announced
 
     public Ship(int startRow, int startCol, int length, boolean horizontal) {
         this.startRow = startRow;
@@ -13,6 +14,7 @@ public class Ship {
         this.length = length;
         this.horizontal = horizontal;
         this.hits = 0;
+        this.sunkAnnounced = false; // initialize to false
     }
 
     public int getLength() {
@@ -37,5 +39,13 @@ public class Ship {
 
     public boolean isHorizontal() {
         return horizontal;
+    }
+
+    public boolean justSunk() {
+        if (isSunk() && !sunkAnnounced) {
+            sunkAnnounced = true;
+            return true;
+        }
+        return false;
     }
 }

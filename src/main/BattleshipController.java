@@ -35,14 +35,19 @@ public class BattleshipController implements ActionListener {
 
         // Update cell in view
         view.updateCell(row, col, model.getCellState(row, col));
-
-        // Update scoreboard with current guess count
         view.updateScoreboard(model);
 
-        // Check game state and show message if all ships are sunk
+        // Check for sunk ship message and show it
+        String sunkMsg = model.getLastSunkMessage();
+        if (!sunkMsg.isEmpty()) {
+            JOptionPane.showMessageDialog(view, sunkMsg);
+        }
+
+        // Check game state and show overall end-of-game message if needed
         if (model.isGameOver()) {
             JOptionPane.showMessageDialog(view,
                     "All ships sunk! You used " + model.getTries() + " tries.");
         }
     }
+
 }
