@@ -6,9 +6,13 @@ public class Ship {
     private final int length;
     private final boolean horizontal;
     private int hits;
-    private boolean sunkAnnounced;  // NEW field to track if "just sunk" has been announced
+    private boolean sunkAnnounced;
 
     public Ship(int startRow, int startCol, int length, boolean horizontal) {
+        assert startRow >= 0 : "Start row must be non-negative";
+        assert startCol >= 0 : "Start column must be non-negative";
+        assert length > 0 : "Ship length must be positive";
+
         this.startRow = startRow;
         this.startCol = startCol;
         this.length = length;

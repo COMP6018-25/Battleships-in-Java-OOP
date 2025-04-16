@@ -72,8 +72,12 @@ public class BattleshipModel extends Observable {
     }
 
     public void placeShip(Ship ship) {
+        assert ship != null : "Ship must not be null";
         int row = ship.getStartRow();
         int col = ship.getStartCol();
+        assert row >= 0 && row < BOARD_SIZE : "Invalid ship row: " + row;
+        assert col >= 0 && col < BOARD_SIZE : "Invalid ship col: " + col;
+        assert ship.getLength() > 0 : "Ship length must be positive";
 
         if (ship.isHorizontal()) {
             if (col + ship.getLength() > BOARD_SIZE) {
@@ -88,6 +92,7 @@ public class BattleshipModel extends Observable {
         int r = row;
         int c = col;
         for (int i = 0; i < ship.getLength(); i++) {
+            assert board[r][c] != null : "Board cell should never be null";
             if (board[r][c] != CellState.EMPTY) {
                 throw new IllegalArgumentException("Ship placement overlaps another ship at (" + r + ", " + c + ").");
             }
@@ -113,6 +118,7 @@ public class BattleshipModel extends Observable {
         notifyObservers();
     }
 
+
     public void loadFromFile(String filename) throws IOException {
         initializeEmptyBoard();
         ships.clear();
@@ -136,6 +142,8 @@ public class BattleshipModel extends Observable {
     }
 
     public boolean guess(int row, int col) {
+        assert row >= 0 && row < BOARD_SIZE : "Row index out of bounds in guess(): " + row;
+        assert col >= 0 && col < BOARD_SIZE : "Column index out of bounds in guess(): " + col;
         tries++;
 
         if (board[row][col] == CellState.HIT || board[row][col] == CellState.MISS) {
