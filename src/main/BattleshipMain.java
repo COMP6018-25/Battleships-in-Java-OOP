@@ -19,13 +19,13 @@ public class BattleshipMain {
         } else if ("gui".equals(choice)) {
             // GUI
             model.initializeRandomBoard();
-            BattleshipView view = new BattleshipView();
+            BattleshipView view = new BattleshipView(model);
             BattleshipController controller = new BattleshipController(model, view);
             view.addController(controller);
         } else {
             System.out.println("Invalid input. Defaulting to GUI...");
             model.initializeRandomBoard();
-            BattleshipView view = new BattleshipView();
+            BattleshipView view = new BattleshipView(model);
             BattleshipController controller = new BattleshipController(model, view);
             view.addController(controller);
         }

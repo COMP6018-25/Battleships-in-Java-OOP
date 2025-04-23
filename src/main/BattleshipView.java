@@ -1,21 +1,23 @@
 package src.main;
 
-import src.main.BattleshipController;
-import src.main.BattleshipModel;
-import src.main.CellState;
-
 import javax.swing.*;
 import java.awt.*;
+import java.util.Observable;
+import java.util.Observer;
 
-public class BattleshipView extends JFrame {
+public class BattleshipView extends JFrame implements Observer {
     public static final int BOARD_SIZE = 10;
     private final JButton[][] buttons;
-    private final JButton resetButton; // Reset button
+    private final JButton resetButton;
     private final JPanel boardPanel;
     private final JPanel controlPanel;
     private final JLabel scoreboardLabel;
+    private BattleshipModel model;
 
-    public BattleshipView() {
+    public BattleshipView(BattleshipModel model) {
+        this.model = model;
+        model.addObserver(this);
+
         setTitle("Battleships (GUI)");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -26,14 +28,13 @@ public class BattleshipView extends JFrame {
         scoreboardPanel.add(scoreboardLabel);
         add(scoreboardPanel, BorderLayout.NORTH);
 
-        // Board panel in the center
+        // Center grid board
         boardPanel = new JPanel(new GridLayout(BOARD_SIZE, BOARD_SIZE));
         buttons = new JButton[BOARD_SIZE][BOARD_SIZE];
         for (int r = 0; r < BOARD_SIZE; r++) {
             for (int c = 0; c < BOARD_SIZE; c++) {
                 JButton btn = new JButton();
                 btn.setActionCommand(r + "," + c);
-                // Set each button to be a fixed square (50x50 pixels, roughly 1cm depending on DPI)
                 btn.setPreferredSize(new Dimension(50, 50));
                 buttons[r][c] = btn;
                 boardPanel.add(btn);
@@ -41,7 +42,7 @@ public class BattleshipView extends JFrame {
         }
         add(boardPanel, BorderLayout.CENTER);
 
-        // Control panel at the bottom with reset button
+        // Bottom control panel with reset
         controlPanel = new JPanel();
         resetButton = new JButton("Reset Game");
         resetButton.setActionCommand("RESET_GAME");
@@ -88,8 +89,13 @@ public class BattleshipView extends JFrame {
         }
     }
 
-    // update the scoreboard with the current number of guesses
     public void updateScoreboard(BattleshipModel model) {
         scoreboardLabel.setText("Guesses: " + model.getTries());
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        updateBoard(model);
+        updateScoreboard(model);
     }
 }
