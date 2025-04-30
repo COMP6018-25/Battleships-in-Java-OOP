@@ -27,13 +27,15 @@ public class BattleshipCLI {
             }
             boolean hit = model.guess(rc[0], rc[1]);
             System.out.println(hit ? "Hit!" : "Miss!");
+            // Check for sunk ship message and print it
+            String sunkMsg = model.getLastSunkMessage();
+            if (!sunkMsg.isEmpty()) {
+                System.out.println(sunkMsg);
+            }
             System.out.println("Ships remaining: " + model.getShipsRemaining());
-
-            if (model.isGameOver()) break;
         }
         printBoard();
         System.out.println("Game over! You sank all ships in " + model.getTries() + " tries.");
-
     }
 
 
